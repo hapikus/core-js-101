@@ -19,8 +19,8 @@
  *    'Tue, 26 Jan 2016 13:48:02 GMT' => Date()
  *    'Sun, 17 May 1998 03:00:00 GMT+01' => Date()
  */
-function parseDataFromRfc2822(/* value */) {
-  throw new Error('Not implemented');
+function parseDataFromRfc2822(value) {
+  return Date.parse(value);
 }
 
 /**
@@ -34,8 +34,8 @@ function parseDataFromRfc2822(/* value */) {
  *    '2016-01-19T16:07:37+00:00'    => Date()
  *    '2016-01-19T08:07:37Z' => Date()
  */
-function parseDataFromIso8601(/* value */) {
-  throw new Error('Not implemented');
+function parseDataFromIso8601(value) {
+  return Date.parse(value);
 }
 
 
@@ -53,8 +53,12 @@ function parseDataFromIso8601(/* value */) {
  *    Date(2012,1,1)    => true
  *    Date(2015,1,1)    => false
  */
-function isLeapYear(/* date */) {
-  throw new Error('Not implemented');
+function isLeapYear(date) {
+  const dateYear = date.getFullYear();
+  return (
+    (dateYear % 4 === 0 && dateYear % 100 !== 0)
+    || (dateYear % 4 === 0 && dateYear % 400 === 0)
+  );
 }
 
 
@@ -73,10 +77,17 @@ function isLeapYear(/* date */) {
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,10,0,0,250)     => "00:00:00.250"
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,15,20,10,453)   => "05:20:10.453"
  */
-function timeSpanToString(/* startDate, endDate */) {
-  throw new Error('Not implemented');
+function timeSpanToString(startDate, endDate) {
+  const dateDiff = new Date(Math.abs(startDate - endDate));
+  const milliseconds = dateDiff.getMilliseconds().toString().padStart(3, '0');
+  const formattedDate = dateDiff.toLocaleString('ru-RU', {
+    timeZone: 'UTC',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+  return `${formattedDate}.${milliseconds}`;
 }
-
 
 /**
  * Returns the angle (in radians) between the hands of an analog clock
@@ -96,6 +107,12 @@ function timeSpanToString(/* startDate, endDate */) {
  */
 function angleBetweenClockHands(/* date */) {
   throw new Error('Not implemented');
+  // const hours = new Date(date).getUTCHours() % 12;
+  // const minutes = new Date(date).getUTCMinutes();
+  // const hourAngle = (hours + minutes / 60) * (Math.PI / 6);
+  // const minuteAngle = minutes * (Math.PI / 30);
+  // const angle = Math.abs(hourAngle - minuteAngle);
+  // return Math.min(angle, 2 * Math.PI - angle).toFixed(16);
 }
 
 
