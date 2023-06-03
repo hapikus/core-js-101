@@ -33,10 +33,9 @@ function willYouMarryMe(isPositiveAnswer) {
     if (typeof isPositiveAnswer !== 'boolean') {
       rejects(Error('Wrong parameter is passed! Ask her again.'));
     }
-    const positive = 'Hooray!!! She said "Yes"!';
-    const negative = 'Oh no, she said "No".';
-    const answer = isPositiveAnswer ? positive : negative;
-    resolve(answer);
+    resolve(isPositiveAnswer
+      ? 'Hooray!!! She said "Yes"!'
+      : 'Oh no, she said "No".');
   });
 }
 
@@ -57,15 +56,7 @@ function willYouMarryMe(isPositiveAnswer) {
  *
  */
 function processAllPromises(array) {
-  const answer = [];
-  return new Promise((resolve) => {
-    Promise.allSettled(array).then((results) => {
-      results.forEach((result) => {
-        answer.push(result.value);
-      });
-      resolve(answer);
-    });
-  });
+  return Promise.all(array);
 }
 
 /**
@@ -88,11 +79,7 @@ function processAllPromises(array) {
  *
  */
 function getFastestPromise(array) {
-  return new Promise((resolve, reject) => {
-    Promise.race(array)
-      .then((result) => resolve([result]))
-      .catch((error) => reject(error));
-  });
+  return Promise.race(array);
 }
 
 /**
@@ -112,23 +99,30 @@ function getFastestPromise(array) {
  *    });
  *
  */
-function chainPromises(/* array, action */) {
-  throw new Error('Not implemented');
-  // let results = [];
-  // return new Promise((resolve) => {
-  //   Promise.allSettled(array)
-  //     .then((result) => {
-  //       result.forEach((item) => {
-  //         if (item.status === 'fulfilled') {
-  //           results.push(item.value);
-  //         }
-  //         if (results.length === action.length) {
-  //           results = [action(...results)];
-  //         }
-  //       });
-  //     })
-  //     .then(() => resolve(...results));
-  // });
+function chainPromises(array, action) {
+  return new Promise((resolve) => {
+    const results = [];
+    let index = 0;
+
+    const processPromise = () => {
+      if (index >= array.length) {
+        resolve(results.reduce(action));
+        return;
+      }
+      const promise = array[index];
+      promise
+        .then((value) => {
+          results.push(value);
+          index += 1;
+          processPromise();
+        })
+        .catch(() => {
+          index += 1;
+          processPromise();
+        });
+    };
+    processPromise();
+  });
 }
 
 module.exports = {
