@@ -114,6 +114,21 @@ function getFastestPromise(array) {
  */
 function chainPromises(/* array, action */) {
   throw new Error('Not implemented');
+  // let results = [];
+  // return new Promise((resolve) => {
+  //   Promise.allSettled(array)
+  //     .then((result) => {
+  //       result.forEach((item) => {
+  //         if (item.status === 'fulfilled') {
+  //           results.push(item.value);
+  //         }
+  //         if (results.length === action.length) {
+  //           results = [action(...results)];
+  //         }
+  //       });
+  //     })
+  //     .then(() => resolve(...results));
+  // });
 }
 
 module.exports = {
